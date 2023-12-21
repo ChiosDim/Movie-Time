@@ -2,22 +2,21 @@
 Welcome to Movie Time, a web application for managing your movie list!
 
 ## Table of Contents
-- Introduction
-- Features
-- Installation
-- Usage
-- Technologies Used
-- Contributing
-- License
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
 
 ## Introduction
 Movie Time is a web application that allows users to manage their movie list. It provides features to add new movies, view details, and edit or delete existing entries. Additionally, users can explore and sort their movie list based on various criteria.
 
 ## Features
-**Add a Movie**: Easily add new movies to your list, add your reviews and rate them!
-**Movie Details**: View detailed information about each movie.
-**Edit and Delete**: Modify or remove movies from your list.
-**Sort and Filter**: Sort your movie list based on different criteria.
+- **Add a Movie**: Easily add new movies to your list, add your reviews and rate them!
+- **Movie Details**: View detailed information about each movie.
+- **Edit and Delete**: Modify or remove movies from your list.
+- **Sort and Filter**: Sort your movie list based on different criteria.
 
 ## Installation
 1. Clone the repository: git clone https://github.com/ChiosDim/movie-time.git
