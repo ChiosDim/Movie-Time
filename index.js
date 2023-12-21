@@ -2,17 +2,24 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import axios from "axios";
+import dotenv from 'dotenv';
 
 const app = express();
 const port = 3000;
+dotenv.config();
+
+const username = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
+const dbPort = process.env.DB_PORT;
 
 const db = new pg.Client({
-  user: "postgres",
+  user: username,
   host: "localhost",
   database: "Movies",
-  password: "jimdim2001",
-  port: 5432,
+  password: password,
+  port: dbPort,
 });
+
 db.connect();
 
 app.use(bodyParser.urlencoded({ extended: true }));
