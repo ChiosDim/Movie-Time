@@ -1,0 +1,74 @@
+<% if (!onlyMovieDetails) { %>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Movies List</title>
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+  </head>
+  
+  <%- include('partials/header.ejs'); -%>
+
+  <body>
+    <div id="content">
+      <h1>My Movies List</h1>
+    
+      <div class="sort-container">
+        <label>
+          <span>Sort By:</span>
+        <select id="sortSelect">
+          <option value="title">Title</option>
+          <option value="director">Director</option>
+          <option value="rating">Rating</option>
+        </select>
+      </label>
+      </div>
+  <% } %>
+
+  <ul id="movie-details">
+      <% movies.forEach(movie => { %>
+        <li>
+          <img src="<%= movie.cover_url %>" alt="<%= movie.title %> Cover">
+          <p><strong>Title:</strong> <%= movie.title %></p>
+          <p><strong>Director:</strong> <%= movie.director %></p>
+          <p><strong>Rating:</strong> <%= movie.rating %></p>
+          <p><strong>Comments:</strong> <%= movie.comment %></p>
+          <a href="/update/<%= movie.id %>" id="edit">Edit</a>
+          <a href="/delete/<%= movie.id %>" id="delete">Delete</a>
+        </li>
+      <% }); %>
+    </ul>
+  </div>
+</body>
+
+<% if (!onlyMovieDetails) { %>
+  <%- include('partials/footer.ejs'); -%>
+</html>
+<% } %>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sortSelect = document.getElementById('sortSelect');
+    const movieDetailsContainer = document.getElementById('movie-details');
+
+    sortSelect.addEventListener('change', function () {
+      const selectedSort = sortSelect.value;
+      // Use fetch to send a GET request to the server
+      fetch(`/?sortBy=${selectedSort}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.text())  // Parse response as text
+      .then(data => {
+        // Update the movie details on the page directly with the received HTML content
+        movieDetailsContainer.innerHTML = data;
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  });
+</script>
+
