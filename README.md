@@ -31,12 +31,19 @@ Manage your movie list efficiently.
 
 ## Technologies Used
 HTML
+
 CSS
+
 JavaScript
+
 Node.js
+
 Express.js
+
 PostgreSQL
+
 EJS (Embedded JavaScript)
+
 Font Awesome
 
 ## Contributing
