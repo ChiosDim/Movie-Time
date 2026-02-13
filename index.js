@@ -52,9 +52,9 @@ app.get("/", async (req, res) => {
     );
     const movies = dbResponse.rows;
 
-    const apiKey = "3330d8c9";
+    const apiKey = process.env.OMDB_API_KEY;
     for (const movie of movies) {
-      const omdbApiUrl = `http://www.omdbapi.com/?t=${encodeURIComponent(movie.title)}&apikey=${apiKey}`;
+      const omdbApiUrl = `http://www.omdbapi.com/?t=${encodeURIComponent(movie.title)}&apikey=${process.env.OMDB_API_KEY}`;
       const response = await axios.get(omdbApiUrl);
       movie.cover_url = response.data.Poster || "";
     }
