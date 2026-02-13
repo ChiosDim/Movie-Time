@@ -3,6 +3,8 @@
 .env.local
 .env.production
 .env.development
+.env.*
+!.env.example
 
 # Dependencies
 node_modules/
@@ -19,3 +21,18 @@ npm-debug.log*
 # Render/Neon specific (just to be safe)
 *.yaml
 !render.yaml  # Keep render.yaml as it doesn't contain secrets
+
+# Cursor/Agent files with potential secrets
+.agents/
+.cursor/
+.vscode/
+.idea/
+**/keys.md
+**/branches.md
+**/credentials.md
+**/secrets.md
+*.key
+*.pem
+.agit/
+.coverage/
+.history/
