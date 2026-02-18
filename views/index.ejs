@@ -1,74 +1,72 @@
-<% if (!onlyMovieDetails) { %>
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Movies List</title>
-    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-  </head>
-  
-  <%- include('partials/header.ejs'); -%>
+<%- include('partials/header.ejs'); -%>
 
-  <body>
-    <div id="content">
-      <h1>My Movies List</h1>
-    
-      <div class="sort-container">
-        <label>
-          <span>Sort By:</span>
-        <select id="sortSelect">
-          <option value="title">Title</option>
-          <option value="director">Director</option>
-          <option value="rating">Rating</option>
-        </select>
-      </label>
-      </div>
-  <% } %>
+<section style="padding-left: var(--space-xl); padding-right: var(--space-xl); max-width: 1400px; margin: 0 auto;">
+  <h1>🎬 My Movie Collection</h1>
 
-  <ul id="movie-details">
+  <% if (movies.length === 0) { %>
+    <div class="text-center mt-3">
+      <p class="text-muted">No movies added yet. <a href="/add">Add your first movie!</a></p>
+    </div>
+  <% } else { %>
+    <div class="sort-controls">
+      <select id="sortSelect" class="sort-select" onchange="sortMovies()">
+        <option value="title" <% if(currentSort === 'title') { %>selected<% } %>>
+          Sort by Title
+        </option>
+        <option value="director" <% if(currentSort === 'director') { %>selected<% } %>>
+          Sort by Director
+        </option>
+        <option value="rating" <% if(currentSort === 'rating') { %>selected<% } %>>
+          Sort by Rating
+        </option>
+      </select>
+    </div>
+
+    <ul id="movie-details">
       <% movies.forEach(movie => { %>
-        <li>
-          <img src="<%= movie.cover_url %>" alt="<%= movie.title %> Cover">
-          <p><strong>Title:</strong> <%= movie.title %></p>
-          <p><strong>Director:</strong> <%= movie.director %></p>
-          <p><strong>Rating:</strong> <%= movie.rating %></p>
-          <p><strong>Comments:</strong> <%= movie.comment %></p>
-          <a href="/update/<%= movie.id %>" id="edit">Edit</a>
-          <a href="/delete/<%= movie.id %>" id="delete">Delete</a>
+        <li class="fade-in">
+          <img
+            src="<%= movie.cover_url || '/assets/placeholder.png' %>"
+            alt="<%= movie.title %> Cover"
+            loading="lazy"
+          />
+          <div>
+            <p><strong>Title:</strong> <%= movie.title %></p>
+            <p><strong>Director:</strong> <%= movie.director %></p>
+            <p><strong>Rating:</strong> <strong style="color: #ffc107;">★</strong> <%= movie.rating %>/10</p>
+            <p><strong>Description:</strong> <%= movie.description %></p>
+            <% if (movie.userComment) { %>
+              <p><strong>Your Comment:</strong> <%= movie.userComment %></p>
+            <% } %>
+          </div>
+          <div class="movie-actions">
+            <a href="/update/<%= movie.id %>" id="edit" class="btn btn-primary">
+              <i class="fas fa-edit"></i>
+              Edit
+            </a>
+            <a
+              href="/delete/<%= movie.id %>"
+              id="delete"
+              class="btn btn-delete"
+              onclick="return confirm('Are you sure you want to delete this movie?');"
+            >
+              <i class="fas fa-trash"></i>
+              Delete
+            </a>
+          </div>
         </li>
       <% }); %>
     </ul>
-  </div>
-</body>
-
-<% if (!onlyMovieDetails) { %>
-  <%- include('partials/footer.ejs'); -%>
-</html>
-<% } %>
-
+  <% } %>
+</section>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  function sortMovies() {
     const sortSelect = document.getElementById('sortSelect');
-    const movieDetailsContainer = document.getElementById('movie-details');
-
-    sortSelect.addEventListener('change', function () {
-      const selectedSort = sortSelect.value;
-      // Use fetch to send a GET request to the server
-      fetch(`/?sortBy=${selectedSort}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(response => response.text())  // Parse response as text
-      .then(data => {
-        // Update the movie details on the page directly with the received HTML content
-        movieDetailsContainer.innerHTML = data;
-      })
-      .catch(error => console.error('Error:', error));
-    });
-  });
+    const selectedSort = sortSelect.value;
+    window.location.href = `/?sortBy=${selectedSort}`;
+  }
 </script>
+
+<%- include('partials/footer.ejs'); -%>
 

@@ -1,12 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Error</title>
-</head>
-<body>
-  <h1>Error</h1>
-  <p><%= error %></p>
-</body>
-</html>
+<%- include('partials/header.ejs'); -%>
+
+<section>
+  <div style="max-width: 600px; margin: 3rem auto; text-align: center;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+
+    <h1><%= statusCode || 500 %> Error</h1>
+
+    <div style="background-color: var(--bg-secondary); padding: 2rem; border-radius: 8px; border-left: 4px solid var(--danger-color); margin-bottom: 2rem;">
+      <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+        <%= error || 'An unexpected error occurred' %>
+      </p>
+      <% if (statusCode === 404) { %>
+        <p style="color: var(--text-secondary);">
+          The page you're looking for doesn't exist.
+        </p>
+      <% } else { %>
+        <p style="color: var(--text-secondary);">
+          Please try again or contact support if the problem persists.
+        </p>
+      <% } %>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <a href="/" class="btn btn-primary">
+        <i class="fas fa-home"></i>
+        Go Home
+      </a>
+      <a href="/add" class="btn btn-secondary">
+        <i class="fas fa-plus"></i>
+        Add Movie
+      </a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer.ejs'); -%>

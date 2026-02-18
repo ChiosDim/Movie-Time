@@ -1,19 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Delete Movie</title>
-  <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-</head>
 <%- include('partials/header.ejs'); -%>
-<body>
-  <h1>Delete Movie</h1>
-  <p>Are you sure you want to delete <%= movie.title %>?</p>
-  <form action="/delete/<%= movie.id %>" method="post">
-    <button type="submit">Yes, Delete</button>
-    <a href="/">Cancel</a>
-  </form>
-</body>
-</html>
+
+<section>
+  <div style="max-width: 500px; margin: 3rem auto; text-align: center">
+    <h1>🗑️ Delete Movie</h1>
+
+    <div
+      style="
+        background-color: var(--bg-secondary);
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+      "
+    >
+      <p style="font-size: 1.1rem; margin-bottom: 1rem">
+        Are you sure you want to delete <strong><%= movie.title %></strong>?
+      </p>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem">
+        This action cannot be undone.
+      </p>
+
+      <div style="display: flex; gap: 10px; justify-content: center">
+        <a href="/" class="btn btn-secondary">
+          <i class="fas fa-times"></i>
+          Cancel
+        </a>
+        <form
+          action="/delete/<%= movie.id %>"
+          method="post"
+          style="display: inline"
+        >
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+            Yes, Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
 <%- include('partials/footer.ejs'); -%>
