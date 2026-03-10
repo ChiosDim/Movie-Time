@@ -59,15 +59,11 @@ app.get('/', async (req, res) => {
       movie.cover_url = response.data.Poster || '';
     }
 
-    // Render the 'index' view with the updated movie details
-    res.render(
-      'index',
-      { movies, onlyMovieDetails: req.query.sortBy !== undefined },
-      (err, html) => {
-        if (err) throw err;
-        res.send(html);
-      }
-    );
+    // Render the 'index' view with the updated movie details - NO CALLBACK!
+    res.render('index', {
+      movies: movies,
+      currentSort: sortBy,
+    });
   } catch (error) {
     console.error('Database query error:', error);
     res.status(500).send('Error fetching movie details');
