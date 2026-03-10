@@ -244,6 +244,31 @@ export async function postUpdateMovie(req, res, next) {
   }
 }
 
+/**
+ * GET /delete/:id â Show delete confirmation page
+ */
+export async function getDeletePage(req, res, next) {
+  try {
+    const { id } = req.params;
+    const movie = await Movie.findById(id);
+
+    if (!movie) {
+      return res.status(404).render('error', {
+        error: 'Movie not found',
+        statusCode: 404,
+      });
+    }
+
+    res.render('delete', { movie });
+  } catch (error) {
+    logger.error('Error in getDeletePage', error.message);
+    next(error);
+  }
+}
+
+/**
+ * POST /delete/:id â Perform the deletion after confirmation
+ */
 export async function deleteMovie(req, res, next) {
   try {
     const { id } = req.params;
@@ -325,6 +350,7 @@ export default {
   postAddMovie,
   getUpdatePage,
   postUpdateMovie,
+  getDeletePage,
   deleteMovie,
   searchMoviesAPI,
   getMovieDetails,
