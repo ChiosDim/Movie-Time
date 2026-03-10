@@ -1,72 +1,183 @@
 <%- include('partials/header.ejs'); -%>
 
-<section style="padding-left: var(--space-xl); padding-right: var(--space-xl); max-width: 1400px; margin: 0 auto;">
-  <h1>🎬 My Movie Collection</h1>
+<div class="page-header">
+  <h1>My Movie Collection</h1>
+  <div class="page-header-meta">
+    <% if (movies.length > 0) { %>
+      <span class="movie-count-badge">
+        <i class="fas fa-film" aria-hidden="true"></i>
+        <%= movies.length %> <%= movies.length === 1 ? 'movie' : 'movies' %>
+      </span>
+      <div class="sort-controls">
+        <span class="sort-label">Sort by:</span>
+        <div class="custom-select" id="sortDropdown">
+          <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span class="custom-select-value">
+              <% if (currentSort === 'title') { %>Title
+              <% } else if (currentSort === 'director') { %>Director
+              <% } else if (currentSort === 'rating') { %>Rating
+              <% } else { %>Title<% } %>
+            </span>
+            <i class="fas fa-chevron-down custom-select-arrow" aria-hidden="true"></i>
+          </button>
+          <ul class="custom-select-dropdown" role="listbox">
+            <li role="option">
+              <a href="/?sortBy=title" class="custom-select-option<% if(currentSort==='title'){%> selected<%}%>">
+                <i class="fas fa-sort-alpha-down" aria-hidden="true"></i>
+                Title
+              </a>
+            </li>
+            <li role="option">
+              <a href="/?sortBy=director" class="custom-select-option<% if(currentSort==='director'){%> selected<%}%>">
+                <i class="fas fa-user" aria-hidden="true"></i>
+                Director
+              </a>
+            </li>
+            <li role="option">
+              <a href="/?sortBy=rating" class="custom-select-option<% if(currentSort==='rating'){%> selected<%}%>">
+                <i class="fas fa-star" aria-hidden="true"></i>
+                Rating
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
 
-  <% if (movies.length === 0) { %>
-    <div class="text-center mt-3">
-      <p class="text-muted">No movies added yet. <a href="/add">Add your first movie!</a></p>
+<% if (movies.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-state-icon" aria-hidden="true">
+      <i class="fas fa-film"></i>
     </div>
-  <% } else { %>
-    <div class="sort-controls">
-      <select id="sortSelect" class="sort-select" onchange="sortMovies()">
-        <option value="title" <% if(currentSort === 'title') { %>selected<% } %>>
-          Sort by Title
-        </option>
-        <option value="director" <% if(currentSort === 'director') { %>selected<% } %>>
-          Sort by Director
-        </option>
-        <option value="rating" <% if(currentSort === 'rating') { %>selected<% } %>>
-          Sort by Rating
-        </option>
-      </select>
-    </div>
-
-    <ul id="movie-details">
-      <% movies.forEach(movie => { %>
-        <li class="fade-in">
+    <h2>No movies yet</h2>
+    <p>Start building your personal movie collection by adding your first film.</p>
+    <a href="/add" class="btn btn-primary btn-lg">
+      <i class="fas fa-plus" aria-hidden="true"></i>
+      Add Your First Movie
+    </a>
+  </div>
+<% } else { %>
+  <div class="movies-grid" id="movie-details" aria-label="Movie collection">
+    <% movies.forEach(function(movie) { %>
+      <article class="movie-card fade-in" aria-label="<%= movie.title %>">
+        <div class="movie-poster">
           <img
             src="<%= movie.cover_url || '/assets/placeholder.png' %>"
-            alt="<%= movie.title %> Cover"
+            alt="<%= movie.title %> poster"
             loading="lazy"
+            onerror="this.src='/assets/placeholder.png'"
           />
-          <div>
-            <p><strong>Title:</strong> <%= movie.title %></p>
-            <p><strong>Director:</strong> <%= movie.director %></p>
-            <p><strong>Rating:</strong> <strong style="color: #ffc107;">★</strong> <%= movie.rating %>/10</p>
-            <p><strong>Description:</strong> <%= movie.description %></p>
-            <% if (movie.userComment) { %>
-              <p><strong>Your Comment:</strong> <%= movie.userComment %></p>
-            <% } %>
+          <div class="movie-poster-overlay" aria-hidden="true"></div>
+          <div class="movie-rating-badge" aria-label="Rating: <%= movie.rating %> out of 10">
+            <i class="fas fa-star" aria-hidden="true"></i>
+            <span><%= parseFloat(movie.rating).toFixed(1) %></span>
           </div>
-          <div class="movie-actions">
-            <a href="/update/<%= movie.id %>" id="edit" class="btn btn-primary">
-              <i class="fas fa-edit"></i>
-              Edit
-            </a>
-            <a
-              href="/delete/<%= movie.id %>"
-              id="delete"
+        </div>
+
+        <div class="movie-body">
+          <h2 class="movie-title-text"><%= movie.title %></h2>
+          <p class="movie-director-text">
+            <i class="fas fa-video" aria-hidden="true"></i>
+            <%= movie.director %>
+          </p>
+          <% if (movie.description) { %>
+            <p class="movie-description-text"><%= movie.description %></p>
+          <% } %>
+          <% if (movie.userComment) { %>
+            <div class="movie-user-comment">
+              <i class="fas fa-quote-left" aria-hidden="true"></i>
+              <p><%= movie.userComment %></p>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="movie-actions">
+          <a
+            href="/update/<%= movie.id %>"
+            class="btn btn-primary"
+            aria-label="Edit <%= movie.title %>"
+          >
+            <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+            Edit
+          </a>
+          <form
+            action="/delete/<%= movie.id %>"
+            method="post"
+            class="delete-form"
+            data-movie-title="<%= movie.title %>"
+          >
+            <button
+              type="submit"
               class="btn btn-delete"
-              onclick="return confirm('Are you sure you want to delete this movie?');"
+              aria-label="Delete <%= movie.title %>"
             >
-              <i class="fas fa-trash"></i>
+              <i class="fas fa-trash" aria-hidden="true"></i>
               Delete
-            </a>
-          </div>
-        </li>
-      <% }); %>
-    </ul>
-  <% } %>
-</section>
+            </button>
+          </form>
+        </div>
+      </article>
+    <% }); %>
+  </div>
+<% } %>
 
 <script>
-  function sortMovies() {
-    const sortSelect = document.getElementById('sortSelect');
-    const selectedSort = sortSelect.value;
-    window.location.href = `/?sortBy=${selectedSort}`;
+  // Dropdown functionality
+  const sortDropdown = document.getElementById('sortDropdown');
+  if (sortDropdown) {
+    const trigger = sortDropdown.querySelector('.custom-select-trigger');
+    const menu = sortDropdown.querySelector('.custom-select-dropdown');
+    const options = menu.querySelectorAll('.custom-select-option');
+
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isOpen = sortDropdown.classList.toggle('open');
+      trigger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    options.forEach(option => {
+      option.addEventListener('click', function(e) {
+        // Navigation happens via href, dropdown closes automatically
+        sortDropdown.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!sortDropdown.contains(e.target)) {
+        sortDropdown.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        sortDropdown.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
+
+  // Delete confirmation
+  const deleteForms = document.querySelectorAll('.delete-form');
+  deleteForms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const movieTitle = this.dataset.movieTitle;
+      if (confirm(`Are you sure you want to delete "${movieTitle}"?`)) {
+        this.submit();
+      }
+    });
+  });
+
+  // Handle image errors
+  document.querySelectorAll('.movie-poster img').forEach(img => {
+    img.addEventListener('error', function() {
+      this.src = '/assets/placeholder.png';
+    });
+  });
 </script>
 
 <%- include('partials/footer.ejs'); -%>
-
