@@ -52,6 +52,19 @@ app.get('/', async (req, res) => {
     );
     const movies = dbResponse.rows;
 
+    // Split comment into description and userComment for each movie
+    for (const movie of movies) {
+      const movieComment = movie.comment || '';
+      if (movieComment.includes('\n\n---\n')) {
+        const parts = movieComment.split('\n\n---\n');
+        movie.description = parts[0];
+        movie.userComment = parts[1] || '';
+      } else {
+        movie.description = movieComment;
+        movie.userComment = '';
+      }
+    }
+
     const apiKey = process.env.OMDB_API_KEY;
     for (const movie of movies) {
       const omdbApiUrl = `http://www.omdbapi.com/?t=${encodeURIComponent(movie.title)}&apikey=${process.env.OMDB_API_KEY}`;
@@ -164,16 +177,17 @@ app.get('/update/:id', async (req, res) => {
     const movie = dbResponse.rows[0];
 
     // Split comment into description and userComment
-    if (movie.comment && movie.comment.includes('\n\n---\n')) {
-      const parts = movie.comment.split('\n\n---\n');
+    const movieComment = movie.comment || '';
+    if (movieComment.includes('\n\n---\n')) {
+      const parts = movieComment.split('\n\n---\n');
       movie.description = parts[0];
       movie.userComment = parts[1] || '';
     } else {
-      movie.description = movie.comment || '';
+      movie.description = movieComment;
       movie.userComment = '';
     }
 
-    res.render('update', { movie });
+    res.render('update', { movie, errorMessage: '' });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching movie details');
