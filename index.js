@@ -26,6 +26,74 @@ app.use('/styles', express.static(path.join(__dirname, 'public/styles')));
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.set('view engine', 'ejs');
 
+// API route for OMDB search autocomplete
+app.get('/api/search', async (req, res) => {
+  try {
+    const query = req.query.q || '';
+
+    if (!query || query.trim().length < 2) {
+      return res.json([]);
+    }
+
+    const apiKey = process.env.OMDB_API_KEY;
+    const response = await axios.get(
+      `http://www.omdbapi.com/?s=${encodeURIComponent(query)}&type=movie&apikey=${apiKey}`,
+      { timeout: 5000 }
+    );
+
+    if (response.data.Response === 'False') {
+      return res.json([]);
+    }
+
+    const suggestions = (response.data.Search || [])
+      .slice(0, 10)
+      .map((movie) => ({
+        title: movie.Title,
+        year: movie.Year,
+        poster: movie.Poster !== 'N/A' ? movie.Poster : null,
+        imdbId: movie.imdbID,
+      }));
+
+    res.json(suggestions);
+  } catch (error) {
+    console.error('Search API error:', error.message);
+    res.json([]);
+  }
+});
+
+// API route for movie details
+app.get('/api/movie-details', async (req, res) => {
+  try {
+    const title = req.query.title || '';
+
+    if (!title || title.trim().length === 0) {
+      return res.json({ error: 'Title is required', success: false });
+    }
+
+    const apiKey = process.env.OMDB_API_KEY;
+    const response = await axios.get(
+      `http://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${apiKey}`
+    );
+
+    if (response.data.Response === 'False') {
+      return res.json({ error: 'Movie not found', success: false });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        title: response.data.Title,
+        director: response.data.Director || '',
+        poster: response.data.Poster,
+        plot: response.data.Plot || '',
+      },
+    });
+  } catch (error) {
+    console.error('Movie details API error:', error.message);
+    res.json({ error: error.message, success: false });
+  }
+});
+
 app.get('/', async (req, res) => {
   try {
     // Fetch movies from the database
@@ -221,7 +289,7 @@ app.post('/update/:id', async (req, res) => {
 });
 
 // POST route for handling movie deletions
-app.get('/delete/:id', async (req, res) => {
+app.post('/delete/:id', async (req, res) => {
   const movieId = req.params.id;
 
   try {
