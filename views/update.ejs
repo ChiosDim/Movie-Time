@@ -1,18 +1,18 @@
 <%- include('partials/header.ejs'); -%>
 
-<section>
-  <h1>✏️ Edit Movie</h1>
+<div class="form-card">
+  <h1 class="form-title">Edit Movie</h1>
 
   <% if (errorMessage) { %>
-    <div id="error-message">
-      <i class="fas fa-exclamation-circle"></i>
+    <div id="error-message" role="alert">
+      <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
       <span><%= errorMessage %></span>
     </div>
   <% } %>
 
-  <form action="/update/<%= movie.id %>" method="post">
+  <form action="/update/<%= movie.id %>" method="post" novalidate>
     <div class="form-group">
-      <label for="title">Movie Title *</label>
+      <label for="title">Movie Title <span aria-hidden="true">*</span></label>
       <input
         type="text"
         id="title"
@@ -20,23 +20,25 @@
         value="<%= movie.title %>"
         placeholder="Enter movie title"
         required
+        autocomplete="off"
       />
     </div>
 
     <div class="form-group">
-      <label for="director">Director *</label>
+      <label for="director">Director <span aria-hidden="true">*</span></label>
       <input
         type="text"
         id="director"
         name="director"
         value="<%= movie.director %>"
-        placeholder="Enter director name"
+        placeholder="e.g. Christopher Nolan"
         required
+        autocomplete="off"
       />
     </div>
 
     <div class="form-group">
-      <label for="rating">Rating (1-10) *</label>
+      <label for="rating">Rating (1&ndash;10) <span aria-hidden="true">*</span></label>
       <input
         type="number"
         id="rating"
@@ -45,41 +47,45 @@
         min="1"
         max="10"
         step="0.1"
-        placeholder="e.g., 8.5"
+        placeholder="e.g. 8.5"
         required
+        aria-describedby="rating-hint"
       />
+      <small class="form-hint" id="rating-hint">Enter a value between 1 and 10</small>
     </div>
 
     <div class="form-group">
-      <label for="description">Description *</label>
+      <label for="description">Description <span aria-hidden="true">*</span></label>
       <textarea
         id="description"
         name="description"
-        placeholder="Movie description/plot..."
+        placeholder="Briefly describe the movie's plot..."
         required
+        rows="4"
       ><%= movie.description %></textarea>
     </div>
 
     <div class="form-group">
-      <label for="userComment">Your Comment (Optional)</label>
+      <label for="userComment">Your Comment <span class="text-muted text-sm">(optional)</span></label>
       <textarea
         id="userComment"
         name="userComment"
-        placeholder="Add your personal comment about this movie..."
+        placeholder="Share your personal take on this film..."
+        rows="3"
       ><%= movie.userComment || '' %></textarea>
     </div>
 
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+    <div class="form-actions">
       <a href="/" class="btn btn-secondary">
-        <i class="fas fa-times"></i>
+        <i class="fas fa-times" aria-hidden="true"></i>
         Cancel
       </a>
       <button type="submit" class="btn btn-success">
-        <i class="fas fa-save"></i>
+        <i class="fas fa-check" aria-hidden="true"></i>
         Save Changes
       </button>
     </div>
   </form>
-</section>
+</div>
 
 <%- include('partials/footer.ejs'); -%>

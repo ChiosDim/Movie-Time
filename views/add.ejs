@@ -1,18 +1,18 @@
 <%- include('partials/header.ejs'); -%>
 
-<section>
-  <h1>➕ Add New Movie</h1>
+<div class="form-card">
+  <h1 class="form-title">Add New Movie</h1>
 
   <% if (errorMessage) { %>
-    <div id="error-message">
-      <i class="fas fa-exclamation-circle"></i>
+    <div id="error-message" role="alert">
+      <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
       <span><%= errorMessage %></span>
     </div>
   <% } %>
 
-  <form action="/add" method="post">
+  <form action="/add" method="post" novalidate>
     <div class="form-group">
-      <label for="newItem">Movie Title *</label>
+      <label for="newItem">Movie Title <span aria-hidden="true">*</span></label>
       <div class="search-input-wrapper">
         <input
           type="text"
@@ -22,26 +22,35 @@
           placeholder="Search for a movie..."
           required
           autocomplete="off"
+          aria-describedby="newItem-hint"
+          aria-autocomplete="list"
+          aria-controls="search-dropdown"
         />
-        <div id="search-dropdown" class="search-dropdown"></div>
+        <div
+          id="search-dropdown"
+          class="search-dropdown"
+          role="listbox"
+          aria-label="Movie suggestions"
+        ></div>
       </div>
-      <small class="form-hint">Search and select a movie to auto-fill details</small>
+      <small class="form-hint" id="newItem-hint">Type at least 2 characters to search and auto-fill details</small>
     </div>
 
     <div class="form-group">
-      <label for="director">Director *</label>
+      <label for="director">Director <span aria-hidden="true">*</span></label>
       <input
         type="text"
         id="director"
         name="director"
         value="<%= formData.director || '' %>"
-        placeholder="Director name"
+        placeholder="e.g. Christopher Nolan"
         required
+        autocomplete="off"
       />
     </div>
 
     <div class="form-group">
-      <label for="rating">Rating (1-10) *</label>
+      <label for="rating">Rating (1&ndash;10) <span aria-hidden="true">*</span></label>
       <input
         type="number"
         id="rating"
@@ -50,125 +59,154 @@
         min="1"
         max="10"
         step="0.1"
-        placeholder="e.g., 8.5"
+        placeholder="e.g. 8.5"
         required
+        aria-describedby="rating-hint"
       />
+      <small class="form-hint" id="rating-hint">Enter a value between 1 and 10</small>
     </div>
 
     <div class="form-group">
-      <label for="description">Description *</label>
+      <label for="description">Description <span aria-hidden="true">*</span></label>
       <textarea
         id="description"
         name="description"
-        placeholder="Movie description/plot..."
+        placeholder="Briefly describe the movie's plot..."
         required
+        rows="4"
       ><%= formData.description || '' %></textarea>
     </div>
 
     <div class="form-group">
-      <label for="userComment">Your Comment (Optional)</label>
+      <label for="userComment">Your Comment <span class="text-muted text-sm">(optional)</span></label>
       <textarea
         id="userComment"
         name="userComment"
-        placeholder="Add your personal comment about this movie..."
+        placeholder="Share your personal take on this film..."
+        rows="3"
       ><%= formData.userComment || '' %></textarea>
     </div>
 
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+    <div class="form-actions">
       <a href="/" class="btn btn-secondary">
-        <i class="fas fa-times"></i>
+        <i class="fas fa-times" aria-hidden="true"></i>
         Cancel
       </a>
       <button type="submit" class="btn btn-primary">
-        <i class="fas fa-plus"></i>
+        <i class="fas fa-plus" aria-hidden="true"></i>
         Add Movie
       </button>
     </div>
   </form>
-</section>
+</div>
 
 <script>
-  const titleInput = document.getElementById('newItem');
-  const directorInput = document.getElementById('director');
-  const descriptionInput = document.getElementById('description');
-  const searchDropdown = document.getElementById('search-dropdown');
-  let searchTimeout;
+  (function () {
+    const titleInput = document.getElementById('newItem');
+    const directorInput = document.getElementById('director');
+    const descriptionInput = document.getElementById('description');
+    const searchDropdown = document.getElementById('search-dropdown');
 
-  // Show search dropdown when user types
-  titleInput.addEventListener('input', function() {
-    const query = titleInput.value.trim();
-    
-    if (query.length < 2) {
-      searchDropdown.innerHTML = '';
-      searchDropdown.style.display = 'none';
-      return;
+    if (!titleInput || !searchDropdown) return;
+
+    let searchTimeout = null;
+
+    function showDropdown(html) {
+      searchDropdown.innerHTML = html;
+      searchDropdown.style.display = 'block';
     }
 
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-      try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        const results = await response.json();
-        
-        if (Array.isArray(results) && results.length > 0) {
-          // Show only top 5 results
-          const topResults = results.slice(0, 5);
-          renderSearchDropdown(topResults);
-        } else {
-          searchDropdown.innerHTML = '<div class="search-no-results">No movies found</div>';
-          searchDropdown.style.display = 'block';
-        }
-      } catch (error) {
-        // Silently handle search error
-        searchDropdown.innerHTML = '<div class="search-no-results">Error searching</div>';
-        searchDropdown.style.display = 'block';
-      }
-    }, 500);
-  });
+    function hideDropdown() {
+      searchDropdown.innerHTML = '';
+      searchDropdown.style.display = 'none';
+    }
 
-  // Render search results as dropdown items
-  function renderSearchDropdown(results) {
-    searchDropdown.innerHTML = results.map(movie => `
-      <div class="search-result" onclick="selectMovie('${movie.title.replace(/'/g, "\\'")}')">
-        <img src="${movie.poster ? movie.poster : 'https://via.placeholder.com/40x60?text=No+Image'}" alt="${movie.title}" class="result-poster" />
-        <div class="result-info">
-          <div class="result-title">${movie.title}</div>
-          <div class="result-year">${movie.year}</div>
-        </div>
-      </div>
-    `).join('');
-    searchDropdown.style.display = 'block';
-  }
-
-  // Select a movie from dropdown and fetch details
-  async function selectMovie(title) {
-    titleInput.value = title;
-    searchDropdown.innerHTML = '';
-    searchDropdown.style.display = 'none';
-
-    try {
-      const response = await fetch(`/api/movie-details?title=${encodeURIComponent(title)}`);
-      if (!response.ok) {
+    function renderSearchResults(results) {
+      if (!results.length) {
+        showDropdown('<div class="search-no-results"><i class="fas fa-search-minus"></i> No movies found</div>');
         return;
       }
-      const data = await response.json();
-      
-      if (data.success && data.data) {
-        directorInput.value = data.data.director || '';
-        descriptionInput.value = data.data.plot || '';
-      }
-    } catch (error) {
-      // Silently handle fetch error
-    }
-  }
 
-  // Close dropdown when clicking outside
-  document.addEventListener('click', function(event) {
-    if (!event.target.closest('.search-input-wrapper')) {
-      searchDropdown.innerHTML = '';
-      searchDropdown.style.display = 'none';
+      const html = results.slice(0, 5).map(function (movie) {
+        const safeTitle = (movie.title || '').replace(/'/g, "\\'").replace(/"/g, '"');
+        const posterSrc = movie.poster
+          ? movie.poster
+          : 'https://placehold.co/32x48/e2e8f0/94a3b8?text=N%2FA';
+        const year = movie.year || '';
+
+        return [
+          '<div class="search-result" role="option" tabindex="0"',
+          ' onclick="selectMovie(\'' + safeTitle + '\')"',
+          ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){selectMovie(\'' + safeTitle + '\');}">',
+          '<img src="' + posterSrc + '" alt="" class="result-poster" loading="lazy" />',
+          '<div class="result-info">',
+          '<div class="result-title">' + movie.title + '</div>',
+          '<div class="result-year">' + year + '</div>',
+          '</div>',
+          '</div>',
+        ].join('');
+      }).join('');
+
+      showDropdown(html);
     }
-  });
+
+    // Debounced search
+    titleInput.addEventListener('input', function () {
+      const query = titleInput.value.trim();
+      clearTimeout(searchTimeout);
+
+      if (query.length < 2) {
+        hideDropdown();
+        return;
+      }
+
+      showDropdown('<div class="search-loading"><span class="spinner" aria-hidden="true"></span> Searching...</div>');
+
+      searchTimeout = setTimeout(async function () {
+        try {
+          const response = await fetch('/api/search?q=' + encodeURIComponent(query));
+          if (!response.ok) throw new Error('Search failed');
+          const results = await response.json();
+          renderSearchResults(Array.isArray(results) ? results : []);
+        } catch (_err) {
+          showDropdown('<div class="search-no-results"><i class="fas fa-exclamation-triangle"></i> Search unavailable</div>');
+        }
+      }, 400);
+    });
+
+    // Select a movie and auto-fill form fields
+    window.selectMovie = async function (title) {
+      titleInput.value = title;
+      hideDropdown();
+
+      try {
+        const response = await fetch('/api/movie-details?title=' + encodeURIComponent(title));
+        if (!response.ok) return;
+        const data = await response.json();
+
+        if (data.success && data.data) {
+          if (directorInput && data.data.director) directorInput.value = data.data.director;
+          if (descriptionInput && data.data.plot) descriptionInput.value = data.data.plot;
+        }
+      } catch (_err) {
+        // Silently ignore; form keeps current values
+      }
+    };
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.search-input-wrapper')) {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown on Escape
+    titleInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+  })();
 </script>
 
 <%- include('partials/footer.ejs'); -%>

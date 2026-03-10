@@ -3,82 +3,86 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Movie Time - Manage your movie collection with ease"
-    />
-    <title><%= typeof title !== 'undefined' ? title : 'Movie Time' %></title>
+    <meta name="description" content="Movie Time Ã¢ Manage your movie collection with ease" />
+    <title><%= typeof title !== 'undefined' ? title + ' | Movie Time' : 'Movie Time' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="/styles/styles.css" />
-    <script
-      src="https://kit.fontawesome.com/a1de4ca2c2.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/a1de4ca2c2.js" crossorigin="anonymous" defer></script>
   </head>
   <body>
-    <nav>
+    <nav aria-label="Main navigation">
       <div class="brand">
-        <a href="/">
-          <i class="fas fa-film"></i>
+        <a href="/" aria-label="Movie Time Ã¢ Home">
+          <span class="brand-icon" aria-hidden="true">
+            <i class="fas fa-film"></i>
+          </span>
           <span>Movie Time</span>
         </a>
       </div>
 
-      <ul class="nav-links">
+      <!-- Mobile hamburger -->
+      <button
+        class="nav-hamburger"
+        id="navToggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="navLinks"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-links" id="navLinks" role="list">
         <li>
           <a href="/add" class="btn-nav btn-nav-primary">
-            <i class="fas fa-plus"></i>
+            <i class="fas fa-plus" aria-hidden="true"></i>
             <span>Add Movie</span>
           </a>
         </li>
         <li class="nav-dropdown">
-          <a href="#" class="btn-nav btn-nav-contact">
-            <i class="fas fa-envelope"></i>
+          <a href="#" class="btn-nav btn-nav-contact" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-user" aria-hidden="true"></i>
             <span>Contact</span>
+            <i class="fas fa-chevron-down" aria-hidden="true" style="font-size:0.65em; opacity:0.7;"></i>
           </a>
-          <ul class="contact-dropdown">
-            <li>
+          <ul class="contact-dropdown" role="menu">
+            <li role="none">
               <a
                 href="https://www.linkedin.com/in/dimitris-chios/"
                 target="_blank"
                 rel="noopener noreferrer"
+                role="menuitem"
               >
-                <i class="fab fa-linkedin"></i>
+                <i class="fab fa-linkedin" aria-hidden="true"></i>
                 LinkedIn
               </a>
             </li>
-            <li>
+            <li role="none">
               <a
                 href="https://github.com/ChiosDim"
                 target="_blank"
                 rel="noopener noreferrer"
+                role="menuitem"
               >
-                <i class="fab fa-github"></i>
+                <i class="fab fa-github" aria-hidden="true"></i>
                 GitHub
               </a>
             </li>
           </ul>
         </li>
+        <li>
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle dark mode"
+            title="Toggle dark/light mode"
+          >
+            <i class="fas fa-moon" id="themeIcon" aria-hidden="true"></i>
+          </button>
+        </li>
       </ul>
     </nav>
-    <main></main>
 
-    <script>
-      // Navigation dropdown handling
-      const dropdowns = document.querySelectorAll('.nav-dropdown');
-      dropdowns.forEach((dropdown) => {
-        const link = dropdown.querySelector('a');
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          dropdown.classList.toggle('active');
-        });
-      });
-
-      // Close dropdowns when clicking outside
-      document.addEventListener('click', function (e) {
-        if (!e.target.closest('.nav-dropdown')) {
-          dropdowns.forEach((d) => d.classList.remove('active'));
-        }
-      });
-    </script>
-  </body>
-</html>
+    <main>

@@ -1,42 +1,36 @@
 <%- include('partials/header.ejs'); -%>
 
-<section>
-  <div style="max-width: 500px; margin: 3rem auto; text-align: center">
-    <h1>🗑️ Delete Movie</h1>
-
-    <div
-      style="
-        background-color: var(--bg-secondary);
-        padding: 2rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-      "
-    >
-      <p style="font-size: 1.1rem; margin-bottom: 1rem">
-        Are you sure you want to delete <strong><%= movie.title %></strong>?
-      </p>
-      <p style="color: var(--text-secondary); margin-bottom: 2rem">
-        This action cannot be undone.
-      </p>
-
-      <div style="display: flex; gap: 10px; justify-content: center">
-        <a href="/" class="btn btn-secondary">
-          <i class="fas fa-times"></i>
-          Cancel
-        </a>
-        <form
-          action="/delete/<%= movie.id %>"
-          method="post"
-          style="display: inline"
-        >
-          <button type="submit" class="btn btn-danger">
-            <i class="fas fa-trash"></i>
-            Yes, Delete
-          </button>
-        </form>
-      </div>
+<div class="confirm-card">
+  <div class="confirm-card-header">
+    <div class="confirm-icon" aria-hidden="true">
+      <i class="fas fa-trash-alt"></i>
     </div>
+    <h2>Delete Movie?</h2>
+    <p>
+      You are about to permanently delete
+      <strong class="confirm-movie-name">&ldquo;<%= movie.title %>&rdquo;</strong>.
+    </p>
   </div>
-</section>
+
+  <div class="confirm-card-warning">
+    <p>
+      <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+      This action cannot be undone.
+    </p>
+  </div>
+
+  <div class="confirm-card-actions">
+    <a href="/" class="btn btn-secondary">
+      <i class="fas fa-times" aria-hidden="true"></i>
+      Cancel
+    </a>
+    <form action="/delete/<%= movie.id %>" method="post">
+      <button type="submit" class="btn btn-danger btn-lg">
+        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+        Yes, Delete
+      </button>
+    </form>
+  </div>
+</div>
 
 <%- include('partials/footer.ejs'); -%>
