@@ -270,13 +270,6 @@ The OMDB API might not have exact matches. Try searching with different titles.
 - `eslint` - Code linting
 - `prettier` - Code formatting
 
-## 📝 License
-
-ISC License &copy; 2024-<%= new Date().getFullYear() %> Dimitris Chios
-
-## 🤝 Contributing
-
-Contributions welcome! Feel free to submit issues and pull requests.
 
 **To contribute:**
 
@@ -293,6 +286,4 @@ Contributions welcome! Feel free to submit issues and pull requests.
 - LinkedIn: [dimitris-chios](https://www.linkedin.com/in/dimitris-chios/)
 - GitHub: [@ChiosDim](https://github.com/ChiosDim)
 
----
-
-Made with ❤️ for movie enthusiasts. Happy movie tracking! 🍿🎬
+🎬
