@@ -25,6 +25,7 @@
       Cancel
     </a>
     <form action="/delete/<%= movie.id %>" method="post">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <button type="submit" class="btn btn-danger btn-lg">
         <i class="fas fa-trash-alt" aria-hidden="true"></i>
         Yes, Delete

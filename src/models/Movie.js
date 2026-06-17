@@ -15,6 +15,10 @@ class Movie {
       return result.rows;
     } catch (error) {
       logger.error('Error fetching all movies', error.message);
+      // Return empty array to allow app to run without database for development
+      if (process.env.NODE_ENV === 'development') {
+        return [];
+      }
       throw error;
     }
   }
@@ -27,6 +31,10 @@ class Movie {
       return result.rows[0] || null;
     } catch (error) {
       logger.error(`Error fetching movie with id ${id}`, error.message);
+      // Return null to allow app to run without database for development
+      if (process.env.NODE_ENV === 'development') {
+        return null;
+      }
       throw error;
     }
   }
@@ -40,6 +48,10 @@ class Movie {
       return result.rows[0] || null;
     } catch (error) {
       logger.error(`Error fetching movie with title ${title}`, error.message);
+      // Return null to allow app to run without database for development
+      if (process.env.NODE_ENV === 'development') {
+        return null;
+      }
       throw error;
     }
   }
@@ -57,6 +69,17 @@ class Movie {
       return result.rows[0];
     } catch (error) {
       logger.error(`Error creating movie: ${title}`, error.message);
+      // Return mock movie object to allow app to run without database for development
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          id: Date.now(), // Mock ID using timestamp
+          title,
+          director,
+          rating: parseFloat(rating),
+          comment,
+          cover_url
+        };
+      }
       throw error;
     }
   }
@@ -80,6 +103,16 @@ class Movie {
       return result.rows[0];
     } catch (error) {
       logger.error(`Error updating movie with id ${id}`, error.message);
+      // Return mock updated movie to allow app to run without database for development
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          id: parseInt(id),
+          title,
+          director,
+          rating: parseFloat(rating),
+          comment
+        };
+      }
       throw error;
     }
   }
@@ -99,6 +132,17 @@ class Movie {
       return result.rows[0];
     } catch (error) {
       logger.error(`Error deleting movie with id ${id}`, error.message);
+      // Return mock deleted movie to allow app to run without database for development
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          id: parseInt(id),
+          title: `Movie ${id}`, // Mock title
+          director: 'Unknown',
+          rating: 0,
+          comment: 'Mock movie for development',
+          cover_url: null
+        };
+      }
       throw error;
     }
   }

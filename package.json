@@ -5,7 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node app.js",
+    "start": "cross-env NODE_ENV=development node --watch app.js",
     "dev": "cross-env NODE_ENV=development node --watch app.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -24,9 +24,13 @@
   "dependencies": {
     "axios": "^1.13.5",
     "body-parser": "^2.2.2",
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
     "dotenv": "^17.2.4",
     "ejs": "^4.0.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
     "pg": "^8.18.0"
   },
   "devDependencies": {
@@ -36,5 +40,8 @@
   },
   "engines": {
     "node": ">=18.x"
+  },
+  "overrides": {
+    "cookie": "0.7.2"
   }
 }

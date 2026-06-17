@@ -1,0 +1,87 @@
+// ââ Dark Mode Toggle ââââââââââââââââââââââââââââââââââââââââ
+const htmlEl = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+function applyTheme(theme) {
+  htmlEl.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  if (themeIcon) {
+    themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+  }
+  if (themeToggle) {
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+}
+
+// Respect saved preference, then system preference
+(function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    applyTheme(saved);
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(prefersDark ? 'dark' : 'light');
+  }
+})();
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', function () {
+    const current = htmlEl.getAttribute('data-theme') || 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+}
+
+// ââ Mobile Navigation ââââââââââââââââââââââââââââââââââââââââ
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+
+if (navToggle && navLinks) {
+  navToggle.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Close nav on outside click
+  document.addEventListener('click', function (e) {
+    if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+      navLinks.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+// ââ Contact Dropdown âââââââââââââââââââââââââââââââââââââââ
+const dropdowns = document.querySelectorAll('.nav-dropdown');
+dropdowns.forEach(function (dropdown) {
+  const trigger = dropdown.querySelector('a');
+  if (!trigger) return;
+
+  trigger.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const isActive = dropdown.classList.toggle('active');
+    trigger.setAttribute('aria-expanded', String(isActive));
+  });
+});
+
+document.addEventListener('click', function (e) {
+  dropdowns.forEach(function (d) {
+    if (!d.contains(e.target)) {
+      d.classList.remove('active');
+      const trigger = d.querySelector('a');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+
+// ââ Delete Confirmation Forms âââââââââââââââââââââââââââââââââââ
+// Intercept delete form submissions and ask for confirmation
+document.querySelectorAll('.delete-form').forEach(function (form) {
+  form.addEventListener('submit', function (e) {
+    const movieName = form.dataset.movieTitle || 'this movie';
+    if (!confirm('Are you sure you want to delete "' + movieName + '"? This cannot be undone.')) {
+      e.preventDefault();
+    }
+  });
+});

@@ -7,9 +7,13 @@ import config from '../config/index.js';
 
 export async function getMovies(req, res, next) {
   try {
+    console.log('getMovies called');
     const sortBy = req.query.sortBy || 'title';
+    console.log('sortBy:', sortBy);
     const orderBy = mapSortToOrderBy(sortBy);
+    console.log('orderBy:', orderBy);
     const movies = await Movie.findAll(orderBy);
+    console.log('movies retrieved:', movies.length);
 
     // Only fetch OMDB data if not a partial update from sorting
     if (!req.query.sortBy) {
@@ -38,12 +42,14 @@ export async function getMovies(req, res, next) {
 
     const isPartialUpdate = req.query.sortBy !== undefined;
 
+    console.log('Rendering index view');
     res.render('index', {
       movies,
       isPartialUpdate,
       currentSort: sortBy,
     });
   } catch (error) {
+    console.error('Error in getMovies:', error);
     logger.error('Error in getMovies', error.message);
     next(error);
   }
