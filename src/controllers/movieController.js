@@ -47,6 +47,7 @@ export async function getMovies(req, res, next) {
       movies,
       isPartialUpdate,
       currentSort: sortBy,
+      csrfToken: req.csrfToken() || '',
     });
   } catch (error) {
     console.error('Error in getMovies:', error);
@@ -89,6 +90,7 @@ export async function getAddPage(req, res, next) {
     res.render('add', {
       errorMessage,
       formData,
+      csrfToken: req.csrfToken() || '',
     });
   } catch (error) {
     logger.error('Error in getAddPage', error.message);
@@ -125,6 +127,7 @@ export async function postAddMovie(req, res, next) {
       return res.render('add', {
         errorMessage: Object.values(validation.errors)[0],
         formData: { title, director, rating, description, userComment },
+        csrfToken: req.csrfToken() || '',
       });
     }
 
@@ -134,6 +137,7 @@ export async function postAddMovie(req, res, next) {
       return res.render('add', {
         errorMessage: 'This movie is already in your list.',
         formData: { title, director, rating, description, userComment },
+        csrfToken: req.csrfToken() || '',
       });
     }
 
@@ -145,6 +149,7 @@ export async function postAddMovie(req, res, next) {
       return res.render('add', {
         errorMessage: 'Movie not found. Please check the title and try again.',
         formData: { title, director, rating, description, userComment },
+        csrfToken: req.csrfToken() || '',
       });
     }
 
@@ -192,6 +197,7 @@ export async function getUpdatePage(req, res, next) {
     res.render('update', {
       movie,
       errorMessage: '',
+      csrfToken: req.csrfToken() || '',
     });
   } catch (error) {
     logger.error('Error in getUpdatePage', error.message);
@@ -235,6 +241,7 @@ export async function postUpdateMovie(req, res, next) {
       return res.render('update', {
         movie,
         errorMessage: Object.values(validation.errors)[0],
+        csrfToken: req.csrfToken() || '',
       });
     }
 
@@ -276,7 +283,7 @@ export async function getDeletePage(req, res, next) {
       });
     }
 
-    res.render('delete', { movie });
+    res.render('delete', { movie, csrfToken: req.csrfToken() || '' });
   } catch (error) {
     logger.error('Error in getDeletePage', error.message);
     next(error);

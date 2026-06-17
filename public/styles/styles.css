@@ -48,7 +48,6 @@
   /* Borders */
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
-  --border-focus: var(--color-primary);
   --border-radius-sm: 0.375rem;
   --border-radius-md: 0.5rem;
   --border-radius-lg: 0.75rem;
@@ -84,30 +83,6 @@
   --space-16: 4rem;
 
   /* Legacy aliases ΓΆΒ€Β” keep backward compat */
-  --primary-color: var(--color-primary);
-  --primary-dark: var(--color-primary-hover);
-  --primary-light: var(--color-primary-subtle);
-  --secondary-color: var(--color-secondary);
-  --success-color: var(--color-success);
-  --danger-color: var(--color-danger);
-  --warning-color: var(--color-accent);
-  --bg-primary: var(--bg-page);
-  --bg-secondary: var(--bg-surface);
-  --bg-tertiary: var(--bg-raised);
-  --text-light: var(--text-inverse);
-  --border-color: var(--border);
-  --shadow-light: var(--shadow-sm);
-  --shadow-medium: var(--shadow-md);
-  --shadow-large: var(--shadow-lg);
-  --radius-sm: var(--border-radius-sm);
-  --radius-md: var(--border-radius-md);
-  --radius-lg: var(--border-radius-lg);
-  --space-xs: var(--space-1);
-  --space-sm: var(--space-2);
-  --space-md: var(--space-4);
-  --space-lg: var(--space-6);
-  --space-xl: var(--space-8);
-  --space-xxl: var(--space-12);
 
   /* Typography */
   --font-primary:
