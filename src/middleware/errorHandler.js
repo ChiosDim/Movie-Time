@@ -8,9 +8,9 @@ export function errorHandler(err, req, res, next) {
     path: req.path,
     method: req.method,
     statusCode: err.statusCode,
-    name: err.name
+    name: err.name,
   });
-  
+
   logger.info('ERROR HANDLER INVOKED', { err: err.message });
   logger.error('Unhandled error', err.message);
 

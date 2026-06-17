@@ -28,7 +28,7 @@ const csrfErrorHandler = (err, req, res, next) => {
   res.status(403);
   res.render('error', {
     error: 'Invalid CSRF token. Please try again.',
-    statusCode: 403
+    statusCode: 403,
   });
 };
 
@@ -57,11 +57,20 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://kit.fontawesome.com"],
-        styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
-        imgSrc: ["'self'", "data:", "https:", "http:"],
-        connectSrc: ["'self'", "https://kit.fontawesome.com", "https://ka-f.fontawesome.com"],
+        scriptSrc: ["'self'", 'https://kit.fontawesome.com'],
+        styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
+        fontSrc: [
+          "'self'",
+          'https://fonts.gstatic.com',
+          'https://kit.fontawesome.com',
+          'https://ka-f.fontawesome.com',
+        ],
+        imgSrc: ["'self'", 'data:', 'https:', 'http:'],
+        connectSrc: [
+          "'self'",
+          'https://kit.fontawesome.com',
+          'https://ka-f.fontawesome.com',
+        ],
         baseUri: ["'self'"],
         formAction: ["'self'"],
       },
@@ -75,8 +84,14 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'no-referrer');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.setHeader(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains'
+  );
+  res.setHeader(
+    'Permissions-Policy',
+    'geolocation=(), microphone=(), camera=()'
+  );
   next();
 });
 

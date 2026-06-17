@@ -221,7 +221,7 @@ export async function postUpdateMovie(req, res, next) {
 
     if (!validation.valid) {
       const movie = await Movie.findById(id);
-      
+
       // Split comment into description and userComment for the form
       if (movie.comment && movie.comment.includes('\n\n---\n')) {
         const parts = movie.comment.split('\n\n---\n');
@@ -231,7 +231,7 @@ export async function postUpdateMovie(req, res, next) {
         movie.description = movie.comment || '';
         movie.userComment = '';
       }
-      
+
       return res.render('update', {
         movie,
         errorMessage: Object.values(validation.errors)[0],

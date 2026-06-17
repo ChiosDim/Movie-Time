@@ -75,7 +75,7 @@
         placeholder="Briefly describe the movie's plot..."
         required
         rows="4"
-      ><%= formData.description || %></textarea>
+      ><%= formData.description || '' %></textarea>
     </div>
 
     <div class="form-group">
@@ -85,7 +85,7 @@
         name="userComment"
         placeholder="Share your personal take on this film..."
         rows="3"
-      ><%= formData.userComment || %></textarea>
+      ><%= formData.userComment || '' %></textarea>
     </div>
 
     <div class="form-actions">
