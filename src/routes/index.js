@@ -10,10 +10,7 @@ router.get('/test', (req, res) => {
 });
 
 // Movie collection (GET /)
-router.get('/', (req, res, next) => {
-  console.log('[ROUTE] / handler executing');
-  movieController.getMovies(req, res, next);
-});
+router.get('/', movieController.getMovies);
 
 // OMDB search autocomplete (GET /api/search?q=...)
 router.get('/api/search', movieController.searchMoviesAPI);
