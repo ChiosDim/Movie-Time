@@ -34,7 +34,16 @@ const csrfErrorHandler = (err, req, res, next) => {
 
 // Make CSRF token available to views
 const csrfTokenMiddleware = (req, res, next) => {
-  res.locals.csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
+  let token = '';
+  if (req.csrfToken && typeof req.csrfToken === 'function') {
+    try {
+      token = req.csrfToken() || '';
+    } catch (e) {
+      // If calling it throws, just use empty string
+      token = '';
+    }
+  }
+  res.locals.csrfToken = token;
   next();
 };
 

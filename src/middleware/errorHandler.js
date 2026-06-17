@@ -28,16 +28,20 @@ export function errorHandler(err, req, res, next) {
       ? 'An error occurred. Please try again.'
       : err.message;
 
+  const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
   res.status(statusCode).render('error', {
     error: message,
     statusCode,
+    csrfToken
   });
 }
 
 export function notFoundHandler(req, res) {
+  const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
   res.status(404).render('error', {
     error: 'Page not found',
     statusCode: 404,
+    csrfToken
   });
 }
 
