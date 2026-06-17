@@ -15,37 +15,6 @@ import {
 import logger from './src/utils/logger.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import csrf from 'csurf';
-
-// CSRF protection setup
-const csrfProtection = csrf({ cookie: true });
-
-// CSRF error handling
-const csrfErrorHandler = (err, req, res, next) => {
-  if (err.code !== 'EBADCSRFTOKEN') return next(err);
-
-  // Handle CSRF token errors
-  res.status(403);
-  res.render('error', {
-    error: 'Invalid CSRF token. Please try again.',
-    statusCode: 403,
-  });
-};
-
-// Make CSRF token available to views
-const csrfTokenMiddleware = (req, res, next) => {
-  let token = '';
-  if (req.csrfToken && typeof req.csrfToken === 'function') {
-    try {
-      token = req.csrfToken() || '';
-    } catch (e) {
-      // If calling it throws, just use empty string
-      token = '';
-    }
-  }
-  res.locals.csrfToken = token;
-  next();
-};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -116,11 +85,6 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// CSRF protection (applied globally - safe methods like GET are automatically exempted)
-app.use(csrfProtection);
-
-// Apply CSRF token to all views (needed for forms)
-app.use(csrfTokenMiddleware);
 
 // View engine
 app.set('view engine', 'ejs');
@@ -136,9 +100,6 @@ if (config.nodeEnv === 'development') {
 
 // Routes
 app.use('/', routes);
-
-// CSRF error handling must come after routes that use CSRF protection
-app.use(csrfErrorHandler);
 
 // 404 handler
 app.use(notFoundHandler);

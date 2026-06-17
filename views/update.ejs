@@ -11,7 +11,6 @@
   <% } %>
 
   <form action="/update/<%= movie.id %>" method="post" novalidate>
-  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="form-group">
       <label for="title">Movie Title <span aria-hidden="true">*</span></label>
       <input

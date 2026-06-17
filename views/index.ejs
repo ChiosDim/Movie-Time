@@ -60,7 +60,6 @@
   </div>
 <% } else { %>
   <div class="movies-grid" id="movie-details" aria-label="Movie collection">
-    <% var templateCsrfToken = csrfToken; %>
     <% movies.forEach(function(movie) { %>
       <article class="movie-card fade-in" aria-label="<%= movie.title %>">
         <div class="movie-poster">
@@ -108,7 +107,6 @@
             class="delete-form"
             data-movie-title="<%= movie.title %>"
           >
-            <input type="hidden" name="_csrf" value="<%= templateCsrfToken %>">
             <button
               type="submit"
               class="btn btn-delete"

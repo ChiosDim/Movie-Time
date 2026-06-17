@@ -43,12 +43,10 @@ export async function getMovies(req, res, next) {
     const isPartialUpdate = req.query.sortBy !== undefined;
 
     console.log('Rendering index view');
-    const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
     res.render('index', {
       movies,
       isPartialUpdate,
-      currentSort: sortBy,
-      csrfToken
+      currentSort: sortBy
     });
   } catch (error) {
     console.error('Error in getMovies:', error);
@@ -88,11 +86,9 @@ export async function getAddPage(req, res, next) {
       }
     }
 
-    const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
     res.render('add', {
       errorMessage,
-      formData,
-      csrfToken
+      formData
     });
   } catch (error) {
     logger.error('Error in getAddPage', error.message);
@@ -126,22 +122,18 @@ export async function postAddMovie(req, res, next) {
     });
 
     if (!validation.valid) {
-      const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
       return res.render('add', {
         errorMessage: Object.values(validation.errors)[0],
-        formData: { title, director, rating, description, userComment },
-        csrfToken
+        formData: { title, director, rating, description, userComment }
       });
     }
 
     // Check if movie already exists
     const existingMovie = await Movie.findByTitle(title);
     if (existingMovie) {
-      const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
       return res.render('add', {
         errorMessage: 'This movie is already in your list.',
-        formData: { title, director, rating, description, userComment },
-        csrfToken
+        formData: { title, director, rating, description, userComment }
       });
     }
 
@@ -150,11 +142,9 @@ export async function postAddMovie(req, res, next) {
     try {
       omdbData = await searchMovie(title);
     } catch (error) {
-      const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
       return res.render('add', {
         errorMessage: 'Movie not found. Please check the title and try again.',
-        formData: { title, director, rating, description, userComment },
-        csrfToken
+        formData: { title, director, rating, description, userComment }
       });
     }
 
@@ -199,11 +189,9 @@ export async function getUpdatePage(req, res, next) {
       movie.userComment = '';
     }
 
-    const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
     res.render('update', {
       movie,
-      errorMessage: '',
-      csrfToken
+      errorMessage: ''
     });
   } catch (error) {
     logger.error('Error in getUpdatePage', error.message);
@@ -244,11 +232,9 @@ export async function postUpdateMovie(req, res, next) {
         movie.userComment = '';
       }
 
-      const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
       return res.render('update', {
         movie,
-        errorMessage: Object.values(validation.errors)[0],
-        csrfToken
+        errorMessage: Object.values(validation.errors)[0]
       });
     }
 
@@ -290,8 +276,7 @@ export async function getDeletePage(req, res, next) {
       });
     }
 
-    const csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() || '' : '';
-    res.render('delete', { movie, csrfToken });
+    res.render('delete', { movie });
   } catch (error) {
     logger.error('Error in getDeletePage', error.message);
     next(error);
