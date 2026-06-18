@@ -1,4 +1,5 @@
 import fs from 'fs';
+console.log('***** TOP LEVEL CONSOLE.LOG *****');
 fs.writeFileSync('./debug.log', 'APP.JS IS BEING LOADED\n');
 
 import express from 'express';
@@ -19,7 +20,19 @@ import rateLimit from 'express-rate-limit';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+console.log(`[STARTUP] __dirname: ${__dirname}`);
+console.log(`[STARTUP] Public directory path: ${path.join(__dirname, 'public')}`);
+console.log(`[STARTUP] Public directory exists: ${fs.existsSync(path.join(__dirname, 'public'))}`);
+console.log(`[STARTUP] index.js exists: ${fs.existsSync(path.join(__dirname, 'public', 'js', 'index.js'))}`);
+console.log(`[STARTUP] footer.js exists: ${fs.existsSync(path.join(__dirname, 'public', 'js', 'footer.js'))}`);
+
 const app = express();
+
+// Log all incoming requests
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.path} from ${req.ip || req.connection.remoteAddress}`);
+  next();
+});
 
 // Write to debug log when app is created
 fs.appendFileSync('./debug.log', 'APP CREATED\n');
@@ -28,6 +41,18 @@ fs.appendFileSync('./debug.log', 'APP CREATED\n');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Debug logging for static file requests
+app.use((req, res, next) => {
+  if (req.path.startsWith('/js/')) {
+    console.log(`[DEBUG] JS file requested: ${req.path}`);
+    console.log(`[DEBUG] __dirname: ${__dirname}`);
+    console.log(`[DEBUG] Looking for: ${path.join(__dirname, 'public', req.path)}`);
+    const fullPath = path.join(__dirname, 'public', req.path);
+    console.log(`[DEBUG] File exists: ${fs.existsSync(fullPath)}`);
+  }
+  next();
+});
 
 // Security headers
 app.use(
@@ -74,7 +99,13 @@ app.use((req, res, next) => {
 });
 
 // Static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, path, req) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    }
+  }
+}));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -105,6 +136,13 @@ app.use(notFoundHandler);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
+
+// Log static file path for debugging
+console.log(`[STATIC DEBUG] __dirname: ${__dirname}`);
+console.log(`[STATIC DEBUG] public path: ${path.join(__dirname, 'public')}`);
+console.log(`[STATIC DEBUG] public directory exists: ${fs.existsSync(path.join(__dirname, 'public'))}`);
+console.log(`[STATIC DEBUG] index.js exists: ${fs.existsSync(path.join(__dirname, 'public', 'js', 'index.js'))}`);
+console.log(`[STATIC DEBUG] footer.js exists: ${fs.existsSync(path.join(__dirname, 'public', 'js', 'footer.js'))}`);
 
 // Start server
 app.listen(config.port, () => {
