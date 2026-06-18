@@ -24,6 +24,7 @@ db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/styles', express.static(path.join(__dirname, 'public/styles')));
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
 app.set('view engine', 'ejs');
 
 // API route for OMDB search autocomplete
