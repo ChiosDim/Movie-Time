@@ -12,23 +12,21 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-const db = new pg.Client({
+const { Pool } = pg;
+
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // Required for Neon.tech
+    rejectUnauthorized: false,
   },
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+  max: 20,
 });
 
-db.connect();
-// Handle database connection errors
-db.on('error', (err) => {
+pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
-
-db.on('end', () => {
-  console.log('Client has disconnected');
-  process.exit(-1);
+  // Pool recovers automatically - don't exit
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -126,7 +124,7 @@ app.get('/', async (req, res) => {
         orderBy = 'title'; // Default to sorting by title
     }
 
-    const dbResponse = await db.query(
+    const dbResponse = await pool.query(
       `SELECT * FROM movie_info ORDER BY ${orderBy}`
     );
     const movies = dbResponse.rows;
@@ -172,7 +170,7 @@ app.post('/add', async (req, res) => {
     const movieTitle = req.body.newItem;
 
     // Check if the movie already exists in the database
-    const existingMovie = await db.query(
+    const existingMovie = await pool.query(
       'SELECT * FROM movie_info WHERE title = $1',
       [movieTitle]
     );
@@ -217,7 +215,7 @@ app.post('/add', async (req, res) => {
       commentText,
       coverUrl,
     ];
-    await db.query(insertQuery, values);
+    await pool.query(insertQuery, values);
 
     res.redirect('/'); // Redirect to the main page after adding the movie
   } catch (error) {
@@ -244,7 +242,7 @@ app.get('/update/:id', async (req, res) => {
   const movieId = req.params.id;
 
   try {
-    const dbResponse = await db.query(
+    const dbResponse = await pool.query(
       'SELECT * FROM movie_info WHERE id = $1',
       [movieId]
     );
@@ -290,7 +288,7 @@ app.post('/update/:id', async (req, res) => {
     const updateQuery =
       'UPDATE movie_info SET title = $1, director = $2, rating = $3, comment = $4 WHERE id = $5';
     const values = [title, director, rating, commentText, movieId];
-    await db.query(updateQuery, values);
+    await pool.query(updateQuery, values);
 
     res.redirect('/');
   } catch (error) {
@@ -304,7 +302,7 @@ app.post('/delete/:id', async (req, res) => {
   const movieId = req.params.id;
 
   try {
-    await db.query('DELETE FROM movie_info WHERE id = $1', [movieId]);
+    await pool.query('DELETE FROM movie_info WHERE id = $1', [movieId]);
     res.redirect('/');
   } catch (error) {
     console.error(error);
