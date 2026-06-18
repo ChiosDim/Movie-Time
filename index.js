@@ -20,6 +20,16 @@ const db = new pg.Client({
 });
 
 db.connect();
+// Handle database connection errors
+db.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
+});
+
+db.on('end', () => {
+  console.log('Client has disconnected');
+  process.exit(-1);
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/styles', express.static(path.join(__dirname, 'public/styles')));
